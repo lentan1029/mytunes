@@ -8,30 +8,47 @@
     <script src="bower_components/backbone/backbone.js"></script>
 
     <script src="data/data.js"></script>
-
+    <script src="env/config.js"></script>
     <script src="models/SongModel.js"></script>
     <script src="collections/Songs.js"></script>
     <script src="collections/SongQueue.js"></script>
-    <script src="models/AppModel.js"></script>
 
-    <script src="views/SongQueueEntryView.js"></script>
-    <script src="views/SongQueueView.js"></script>
     <script src="views/PlayerView.js"></script>
     <script src="views/LibraryView.js"></script>
-    <script src="views/LibraryEntryView.js"></script>
+    <script src="views/SongQueueView.js"></script>
+    <script src="models/AppModel.js"></script>
     <script src="views/AppView.js"></script>
+    <script src="views/SongQueueEntryView.js"></script>
+    <script src="views/LibraryEntryView.js"></script>
 
     <script>
       $(function() {
         // set up model objects
         library = new Songs(songData);
-        app = new AppModel({library: library});
+        var parseData;
+        $.ajax({
+            url: 'https://api.parse.com/1/classes/songs/',
+            method: 'GET',
+            success: function(data) {
+                parseData = data.results;
+                library = new Songs(parseData);
+                app = new AppModel({library: library});
+                appView = new AppView({model: app});
+                $('body').append(appView.render());
+            }
+        });
+        
+
+        // library = new Songs(parseData);
+        // app = new AppModel({library: library});
+        // appView = new AppView({model: app});
+        // $('body').append(appView.render());
 
         // build a view for the top level of the whole app
-        appView = new AppView({model: app});
+       
 
         // put the view onto the screen
-        $('body').append(appView.render());
+        
       });
     </script>
   </body>
